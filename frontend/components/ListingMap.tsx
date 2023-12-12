@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
-import React from "react";
+import React, { memo } from "react";
 import { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { defaultStyles } from "../constants/styles";
 import { ListingGeo } from "../interface/listingGeo";
@@ -17,7 +17,7 @@ const InitialRegion = {
   latitudeDelta: 9,
   longitudeDelta: 9,
 };
-const ListingMap = ({ listings }: Props) => {
+const ListingMap = memo(({ listings }: Props) => {
   const router = useRouter();
 
   const onMarkerSelected = (event: ListingGeo) => {
@@ -38,9 +38,9 @@ const ListingMap = ({ listings }: Props) => {
           latitude: geometry.coordinates[1],
         }}
       >
-       <View style={styles.marker}>
-       <Text style={styles.markerText}>{points}</Text>
-       </View>
+        <View style={styles.marker}>
+          <Text style={styles.markerText}>{points}</Text>
+        </View>
       </Marker>
     );
   };
@@ -74,7 +74,7 @@ const ListingMap = ({ listings }: Props) => {
       </MapView>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   marker: {

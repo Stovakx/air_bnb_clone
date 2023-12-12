@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  FlatList,
   ListRenderItem,
   TouchableOpacity,
   StyleSheet,
@@ -12,18 +11,25 @@ import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import { defaultStyles } from "../constants/styles";
 import { Link } from "expo-router";
-import { listing } from "../interface/listing";
+import { FlatList } from "react-native-gesture-handler";
+import { BottomSheetFlatList, BottomSheetFlatListMethods } from "@gorhom/bottom-sheet";
 
 interface Props {
   listings: any[];
   category: string;
+  refresh: number;
 }
-const Listing = ({ listings: items, category }: Props) => {
+const Listing = ({ listings: items, category, refresh }: Props) => {
   const [loading, setLoading] = useState(false);
-  const listRef = useRef<FlatList>(null);
+  const listRef = useRef<BottomSheetFlatListMethods>(null);
+
+  useEffect(()=>{
+    if(refresh){
+      listRef.current?.scrollToOffset({offset: 0, animated: true});
+    };
+  }, [refresh])
 
   useEffect(() => {
-    console.log("Realoading list to", items.length);
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -62,7 +68,9 @@ const Listing = ({ listings: items, category }: Props) => {
           </View>
           <Text style={{ fontFamily: "Montserrat" }}>{item.room_type}</Text>
           <View style={{ flexDirection: "row", gap: 4 }}>
-            <Text style={{ fontFamily: "MontserratSemiBold" }}>€ {item.price}</Text>
+            <Text style={{ fontFamily: "MontserratSemiBold" }}>
+              € {item.price}
+            </Text>
             <Text style={{ fontFamily: "Montserrat" }}>night</Text>
           </View>
         </Animated.View>
@@ -72,10 +80,13 @@ const Listing = ({ listings: items, category }: Props) => {
 
   return (
     <View style={defaultStyles.container}>
-      <FlatList
+      <BottomSheetFlatList
         ref={listRef}
         data={loading ? [] : items}
         renderItem={renderRow}
+        ListHeaderComponent={
+          <Text style={styles.info}>{items.length} homes.</Text>
+        }
       />
     </View>
   );

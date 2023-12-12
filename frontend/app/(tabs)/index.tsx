@@ -1,11 +1,11 @@
 import { View, Text } from 'react-native'
 import React, { useMemo, useState } from 'react'
-import { Link, Stack } from 'expo-router'
+import { Stack } from 'expo-router'
 import ExploreHeader from '../../components/ExploreHeader'
-import Listing from '../../components/Listing'
 import listingData from '../../assets/data/air-bnb-listings.json';
 import listingDataGeo from '../../assets/data/airbnb-listings.geo.json'
 import ListingMap from '../../components/ListingMap';
+import ListingBottomSheets from '../../components/ListingBottomSheets'
 
 
 const Page = () => {
@@ -17,14 +17,14 @@ const Page = () => {
   }
 
   return (
-    <View style={{flex:1, marginTop:130}}>
+    <View style={{flex:1, marginTop:80}}>
       <Stack.Screen options={{
         header: ()=> <ExploreHeader onCategoryChanged={onDataChanged}/>,
 
       }}
       />
-      {/* <Listing listings={items} category={category}/> */}
-     <ListingMap listings={listingDataGeo}/>
+     <ListingMap listings={itemsGeo}/>
+     <ListingBottomSheets listings={items} category={category}/>
     </View>
   )
 }
