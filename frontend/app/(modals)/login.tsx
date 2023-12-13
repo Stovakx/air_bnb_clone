@@ -8,6 +8,7 @@ import { useOAuth } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 
 
+
 enum Strategy {
   Google = 'oauth_google',
   Apple = 'oauth_apple',
@@ -30,7 +31,7 @@ const Page = () => {
 
     try {
       const { createdSessionId, setActive } = await selectedAuth();
-
+      console.log('OAuth response', createdSessionId);
       if (createdSessionId) {
         setActive!({ session: createdSessionId });
         router.back();
