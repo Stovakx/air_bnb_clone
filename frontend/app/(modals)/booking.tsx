@@ -36,12 +36,10 @@ const Page = () => {
     if (groups.some((group) => group.count !== 0)) {
       const resetGroups = guestsGropus.map((group) => ({ ...group, count: 0 }));
       setGroups(resetGroups);
-      console.log(groups);
     }
   };
 
   useEffect(()=>{
-    console.log(groups, "useEffect")
   },[groups])
   //TODO: code works fine, but i think it will be here easier way for this.
   const onDateChange = (date: Date, type: string) => {
