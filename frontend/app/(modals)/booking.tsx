@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BlurView } from "expo-blur";
 import Animated, { SlideInDown } from "react-native-reanimated";
 import { defaultStyles } from "../../constants/styles";
@@ -11,53 +11,68 @@ import BookingCard, {
   CardHeader,
 } from "../../components/BookingCard";
 import { places } from "../../assets/data/places";
+import { guestsGropus } from "../../assets/data/groups";
+
+interface Place {
+  title: string;
+  img: string;
+}
 
 const Page = () => {
   const router = useRouter();
   const [openCard, setOpenCard] = useState(0);
-  const [selectedPlaces, setSelectedPlaces] = useState(0);
-  const [selectedStartDate, setSelectedStartDate] = useState("DD/MM/YYYY");
-  const [selectedEndDate, setSelectedEndDate] = useState("DD/MM/YYYY");
+  const [selectedPlaces, setSelectedPlaces] = useState<Place | null>(null);
+  const [selectedStartDate, setSelectedStartDate] = useState("");
+  const [selectedEndDate, setSelectedEndDate] = useState("");
+  const [groups, setGroups] = useState(guestsGropus);
 
+  //clearing informations in
   const clearAll = () => {
     setOpenCard(0);
-    setSelectedPlaces(0);
+    setSelectedPlaces(null);
+    setSelectedStartDate("");
+    setSelectedEndDate("");
+
+    if (groups.some((group) => group.count !== 0)) {
+      const resetGroups = guestsGropus.map((group) => ({ ...group, count: 0 }));
+      setGroups(resetGroups);
+      console.log(groups);
+    }
   };
-  //TODO: code works fine, but i think it will be here easier way for this. 
-  const onDateChange = (date:Date, type:string) => {
+
+  useEffect(()=>{
+    console.log(groups, "useEffect")
+  },[groups])
+  //TODO: code works fine, but i think it will be here easier way for this.
+  const onDateChange = (date: Date, type: string) => {
     const newDate = JSON.stringify(date);
-    const newDate1 = newDate.substring(1, newDate.length-1);
-    const dates = newDate1.split('T');
-    const date1 = dates[0].split('-');
+    const newDate1 = newDate.substring(1, newDate.length - 1);
+    const dates = newDate1.split("T");
+    const date1 = dates[0].split("-");
     const day = date1[2];
     const month = date1[1];
     const year = date1[0];
-    console.log(day+"/"+month+"/"+year)
 
     if (type === "END_DATE") {
       if (day == undefined) {
-        setSelectedEndDate("DD/MM/YYYY");
+        setSelectedEndDate("DD.MM.YYYY");
       } else {
-        setSelectedEndDate(day+"/"+month+"/"+year);
+        setSelectedEndDate(day + "." + month + "." + year);
       }
     } else {
-      setSelectedStartDate(day+"/"+month+"/"+year);
-      setSelectedEndDate('')
+      setSelectedStartDate(day + "." + month + "." + year);
+      setSelectedEndDate("");
     }
   };
 
   return (
     <BlurView style={styles.container} intensity={70} tint="dark">
-      <View>
-        <Text>{selectedStartDate}</Text>
-      <Text>{selectedEndDate}</Text>
-      </View>
       {/* Where */}
       <View style={styles.card}>
         {openCard != 0 && (
           <BookingCard
             firstText={"Where"}
-            secondText={"setOpenCard 0"}
+            secondText={selectedPlaces ? selectedPlaces.title : ""}
             setOpenCard={setOpenCard}
             onPress={() => setOpenCard(0)}
           />
@@ -79,7 +94,7 @@ const Page = () => {
         {openCard != 1 && (
           <BookingCard
             firstText={"When"}
-            secondText={"setOpenCard 1"}
+            secondText={`From: ${selectedStartDate} to: ${selectedEndDate}`}
             setOpenCard={setOpenCard}
             onPress={() => setOpenCard(1)}
           />
@@ -91,12 +106,11 @@ const Page = () => {
           </>
         )}
       </View>
-
+      {/* guests */}
       <View style={styles.card}>
         {openCard != 2 && (
           <BookingCard
             firstText={"Guests"}
-            secondText={"2"}
             setOpenCard={setOpenCard}
             onPress={() => setOpenCard(2)}
           />
@@ -104,11 +118,16 @@ const Page = () => {
         {openCard == 2 && (
           <>
             <CardHeader title={"How many people?"} />
-            <CardBody openCard={openCard} />
+            <CardBody
+              openCard={openCard}
+              guestsGropus={guestsGropus}
+              setGroups={setGroups}
+              groups={groups}
+            />
           </>
         )}
       </View>
-
+      {/* footer */}
       <Animated.View
         style={defaultStyles.footer}
         entering={SlideInDown.delay(200)}
@@ -134,7 +153,6 @@ const Page = () => {
           </TouchableOpacity>
         </View>
       </Animated.View>
-     
     </BlurView>
   );
 };

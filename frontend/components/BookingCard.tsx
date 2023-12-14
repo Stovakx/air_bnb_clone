@@ -1,3 +1,5 @@
+//TODO: předělat na více komponentů aby byl kód přehlednější?
+
 import React, { useState } from "react";
 import Animated, {
   FadeIn,
@@ -23,10 +25,11 @@ export const CardBody = ({
   setSelectedPlaces,
   selectedPlaces,
   places,
-  onDateChange
+  onDateChange,
+  guestsGropus,
+  setGroups,
+  groups,
 }: any) => {
-
-
   return (
     <Animated.View entering={FadeIn} exiting={FadeOut} style={styles.cardBody}>
       {openCard == 0 ? (
@@ -42,6 +45,7 @@ export const CardBody = ({
               style={styles.inputField}
               placeholder="Search destinations"
               placeholderTextColor={Colors.grey}
+              /* nastavit setSearch nebo něco takového, aby to vyhledávalo v places.ts jména destinací a vyfiltrovalo to dané desinace */
             />
           </View>
           <ScrollView
@@ -51,13 +55,13 @@ export const CardBody = ({
           >
             {places.map((place, index) => (
               <TouchableOpacity
-                onPress={() => setSelectedPlaces(index)}
+                onPress={() => setSelectedPlaces(place)}
                 key={index}
               >
                 <Image
                   source={place.img}
                   style={
-                    selectedPlaces == index
+                    selectedPlaces == place
                       ? styles.placeSelected
                       : styles.place
                   }
@@ -70,7 +74,7 @@ export const CardBody = ({
           </ScrollView>
         </>
       ) : openCard == 1 ? (
-        /* napsat kód pro vybrání startovného datumu a konečného, stylizace dní ve výběru */
+        //změnit stylizaci vybraných dnů
         <CalendarPicker
           selectedDayColor={Colors.primary}
           selectedDayTextColor={"#fff"}
@@ -79,9 +83,85 @@ export const CardBody = ({
           onDateChange={onDateChange}
         />
       ) : (
-        <View key={openCard} style={styles.searchSection}>
-          <Text>Open card is 2</Text>
-        </View>
+        <>
+          {guestsGropus.map((group, index) => (
+            <View
+              style={[
+                styles.guestItem,
+                index + 1 < guestsGropus.length ? styles.itemBorder : null,
+              ]}
+              key={index}
+            >
+              <View>
+                <Text
+                  style={{ fontFamily: "MontserratSemiBold", fontSize: 14 }}
+                >
+                  {group.name}
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: "Montserrat",
+                    fontSize: 14,
+                    color: Colors.grey,
+                  }}
+                >
+                  {group.text}
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 10,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    const newGroups = [...guestsGropus];
+                    newGroups[index].count =
+                      newGroups[index].count > 0
+                        ? newGroups[index].count - 1
+                        : 0;
+                    setGroups(newGroups);
+                  }}
+                >
+                  <Ionicons
+                    name="remove-circle-outline"
+                    size={26}
+                    color={
+                      guestsGropus[index].count > 0 ? Colors.grey : "#cdcdcd"
+                    }
+                  />
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    fontFamily: "Montserrat",
+                    fontSize: 16,
+                    minWidth: 18,
+                    textAlign: "center",
+                  }}
+                >
+                  {groups[index].count}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    const newGroups = [...guestsGropus];
+                    newGroups[index].count++;
+                    setGroups(newGroups);
+                  }}
+                >
+                  <Ionicons
+                    name="add-circle-outline"
+                    size={26}
+                    color={Colors.grey}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </>
       )}
     </Animated.View>
   );

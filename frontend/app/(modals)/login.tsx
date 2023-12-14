@@ -20,7 +20,7 @@ enum Strategy {
  * 
  * 
  * when i try to log in, it will give me unmatched route. Problem is on Clerk/Google side. Maybe try to do auth myself? 
- * 
+ * TODO: OWN auth and login/registration or use another client, Clerk doesn't work 
  * @returns {JSX.Element} The rendered login page.
  */
 const Page = () => {

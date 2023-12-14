@@ -11,8 +11,8 @@ import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import { defaultStyles } from "../constants/styles";
 import { Link } from "expo-router";
-import { FlatList } from "react-native-gesture-handler";
 import { BottomSheetFlatList, BottomSheetFlatListMethods } from "@gorhom/bottom-sheet";
+import Colors from "../constants/Colors";
 
 interface Props {
   listings: any[];
@@ -22,6 +22,8 @@ interface Props {
 const Listing = ({ listings: items, category, refresh }: Props) => {
   const [loading, setLoading] = useState(false);
   const listRef = useRef<BottomSheetFlatListMethods>(null);
+  const [inWishlist, setInWishlist] = useState(false);
+
 
   useEffect(()=>{
     if(refresh){
@@ -51,7 +53,7 @@ const Listing = ({ listings: items, category, refresh }: Props) => {
           <TouchableOpacity
             style={{ position: "absolute", right: 30, top: 30 }}
           >
-            <Ionicons name="heart-outline" size={24} color="#000" />
+            <Ionicons name="heart-outline" size={24} color={inWishlist ? Colors.primary : "#000" }/>
           </TouchableOpacity>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
