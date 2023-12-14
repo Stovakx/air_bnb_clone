@@ -3,13 +3,15 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { TouchableOpacity } from "react-native";
-import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
-import * as SecureStorage from 'expo-secure-store';
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import * as SecureStorage from "expo-secure-store";
+import BookingHeader from "../components/BookingHeader";
+import Colors from "../constants/Colors";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 //tvorba cache
 const tokenCache = {
-  async getToken(key: string){
+  async getToken(key: string) {
     try {
       return SecureStorage.getItemAsync(key);
     } catch (error) {
@@ -17,14 +19,14 @@ const tokenCache = {
     }
   },
 
-  async saveToken (key: string, value: string){
+  async saveToken(key: string, value: string) {
     try {
       return SecureStorage.setItemAsync(key, value);
     } catch (error) {
       return;
     }
-  }
-}
+  },
+};
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -64,10 +66,13 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>
-    <RootLayoutNav />
-  </ClerkProvider> 
-  )
+    <ClerkProvider
+      publishableKey={CLERK_PUBLISHABLE_KEY!}
+      tokenCache={tokenCache}
+    >
+      <RootLayoutNav />
+    </ClerkProvider>
+  );
 }
 
 function RootLayoutNav() {
@@ -75,9 +80,9 @@ function RootLayoutNav() {
 
   const { isLoaded, isSignedIn } = useAuth();
 
-  useEffect(()=>{
-    if(isLoaded && !isSignedIn){
-      router.push('/(modals)/login');
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push("/(modals)/login");
     }
   }, [isLoaded]);
 
@@ -104,21 +109,33 @@ function RootLayoutNav() {
         name="listing/[id]"
         options={{
           headerTitle: "",
-          headerTransparent:true,
+          headerTransparent: true,
         }}
       />
       <Stack.Screen
         name="(modals)/booking"
         options={{
           presentation: "transparentModal",
-          animation:'fade' ,
-          title: "Booking",
+          animation: "fade",
+          headerTransparent: true,
+          headerTitle: () => <BookingHeader />,
           headerTitleStyle: {
             fontFamily: "MontserratSemiBold",
           },
+          // když použiju headerLeft, tak se mi zobrazí jak šipka doleva, tak close-outline icon.. 
+          //(na ios bez problému, android ukazuje 2 ikony, ale u Login modal ukazuje jen jednu jak má)
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close-outline" size={28} />
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{
+                backgroundColor: "#fff",
+                borderColor: Colors.grey,
+                borderRadius: 30,
+                borderWidth: 1,
+                padding: 4,
+              }}
+            >
+              <Ionicons name="close-outline" size={22} />
             </TouchableOpacity>
           ),
         }}

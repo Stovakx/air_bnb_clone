@@ -5,7 +5,7 @@ import { defaultStyles } from '../../constants/styles';
 import Colors from '../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useOAuth } from '@clerk/clerk-expo';
-import { useRouter } from 'expo-router';
+import { useRouter, Redirect } from 'expo-router';
 
 
 
@@ -14,6 +14,15 @@ enum Strategy {
   Apple = 'oauth_apple',
   Facebook = 'oauth_facebook',
 }
+/**
+ * Renders a login page with various authentication options.
+ * Uses the `useWarmUpBrowser` hook to warm up the browser and the `useOAuth` hook to handle OAuth authentication with different strategies like Google, Apple, and Facebook.
+ * 
+ * 
+ * when i try to log in, it will give me unmatched route. Problem is on Clerk/Google side. Maybe try to do auth myself? 
+ * 
+ * @returns {JSX.Element} The rendered login page.
+ */
 const Page = () => {
   useWarmUpBrowser();
   const router = useRouter();
@@ -22,7 +31,7 @@ const Page = () => {
   const { startOAuthFlow: appleAuth } = useOAuth({ strategy: 'oauth_apple' });
   const { startOAuthFlow: facebookAuth } = useOAuth({ strategy: 'oauth_facebook' });
 
-    const onSelectAuth = async (strategy: Strategy) => {
+  const onSelectAuth = async (strategy: Strategy) => {
     const selectedAuth = {
       [Strategy.Google]: googleAuth,
       [Strategy.Apple]: appleAuth,
@@ -34,7 +43,7 @@ const Page = () => {
       console.log('OAuth response', createdSessionId);
       if (createdSessionId) {
         setActive!({ session: createdSessionId });
-        router.back();
+        <Redirect href={'/(tabs)/'}/>;
       }
     } catch (err) {
       console.error('OAuth error', err);
@@ -75,8 +84,8 @@ const Page = () => {
         </TouchableOpacity>
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container : {
